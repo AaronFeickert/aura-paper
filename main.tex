@@ -190,8 +190,7 @@ The relevant algorithms are the following:
 	\item $\func{BitVerify}\left( \Pi_{\text{bit}}, B \right) \mapsto \{0, 1\}$
 \end{itemize}
 A simple generalization of an existing proving system by Bootle \textit{et al.} may be used as an instantiation of the required proving system \cite{bootle}.
-For completeness, we include a full description of the generalization in Appendix \ref{app:bit}.
-
+We refer the reader to the full version of the paper\footnote{This link is removed for review purposes, but will be included in the workshop publication if accepted.} for a full description of the generalization.
 
 \subsubsection{Commitment set proving system}
 
@@ -474,7 +473,8 @@ Voter anonymity is asserted unconditionally by the use of a commitment set proof
 
 \subsection{Efficiency}
 
-We discuss overall scaling of Aura algorithms here, and provide a more concrete comparison to ElectionGuard in Appendix \ref{app:efficiency}.
+We discuss overall scaling of Aura algorithms here.
+Due to page limits, we refer the reader to the full version of the paper\footnote{This link is removed for review purposes, but will be included in the workshop publication if accepted.} for a more complete comparison to ElectionGuard.
 
 The most computationally-expensive construction in an Aura election is the commitment set membership proof associated to each ballot.
 The size of this proof scales as $O(\log(N_{\text{voters}}))$ using the instantiation referenced.
@@ -491,79 +491,6 @@ These observations make Aura a competitive candidate for suitable applications.
 
 \bibliographystyle{splncs04}
 \bibliography{main}
-
-
-\appendix
-
-
-\section{Bit commitment proving system}
-\label{app:bit}
-
-We now show an efficient instantiation of a bit commitment proving system.
-This is a generalization of the construction used in \cite{bootle}, which in our notation supports only $w = 1$.
-The proof of security follows similarly with only minor straightforward modifications, so we omit it here.
-
-While in Aura we describe a non-interactive construction, we show here the corresponding interactive protocol, and note that the strong Fiat-Shamir technique easily applies.
-
-\begin{enumerate}
-    \item The prover selects $r_A, r_C, r_D, \{a_i\}_{i=1}^{k-1} \in \F$ uniformly at random, and sets \[ a_0 = - \sum_{i=1}^{k-1} a_i. \]
-    \item The prover computes the Pedersen vector commitments
-    \begin{alignat*}{1}
-        A &= r_A H + \sum_{i=0}^{k-1} a_i G_i \\
-        C &= r_C H + \sum_{i=0}^{k-1} a_i(1 - 2b_i) G_i \\
-        D &= r_D H + \sum_{i=0}^{k-1} a_i^2 G_i
-    \end{alignat*}
-    and sends $A, C, D$ to the verifier.
-    \item The verifier selects a challenge $x \in \F \setminus \{0\}$ uniformly at random, and sends $x$ to the prover.
-    \item For each $i \in [1,k)$, the prover sets $f_i = b_i x + a_i$.
-    The prover also sets $z_a = rx + r_A$ and $z_C = r_C x + r_D$, and sends $\{f_i\}_{i=0}^{k-1}, z_A, z_C$ to the verifier.
-    \item The verifier sets \[ f_0 = wx - \sum_{i=1}^{k-1} f_i \] and accepts the proof if and only if the following hold:
-    \begin{alignat*}{1}
-        A + xB &= z_A H + \sum_{i=0}^{k-1} f_i G_i \\
-        xC + D &= z_C H + \sum_{i=0}^{k-1} f_i(x - f_i) G_i
-    \end{alignat*}
-\end{enumerate}
-
-
-\section{Comparison to ElectionGuard}
-\label{app:efficiency}
-
-We compare the efficiency of some Aura components to those of ElectionGuard \cite{electionguard}, since its design is well specified.
-However, we note that ElectionGuard offloads voter anonymity to election organizers, which Aura specifically avoids through the use of voter-produced anonymity proofs; as a result, we cannot provide a direct comparison.
-
-However, it is instructive to examine how Aura's other ballot-related proofs compare.
-In particular, we note that ballot proofs in both protocols have two overall goals: they must show that each option encrypts to 0 (the voter does not choose it) or 1 (the voter chooses it) against the correct ElGamal key, and must further show that only a specified number of options are chosen.
-In Aura, this is done using $\func{EncValVerify}$ on each encrypted option from a ballot, and $\func{BitVerify}$ on the sum of all encrypted options.
-Specifically, the former asserts that each option is a valid encryption of \textit{some} message (secretly known by the prover) against the proper key, and the latter asserts both that each such message is in $\{0,1\}$ and that the selection limit is satisfied.
-This approach succeeds in part because each choice is assocated to a unique group generator as part of the ElGamal encryptions.
-
-In ElectionGuard, a related but different approach is taken.
-One proving system uses a disjunction approach to show that each encrypted option corresponds to a message in $\{0,1\}$ against the proper key.
-Another proving system shows that the sum of all such encryptions corresponds to the selection limit.
-This approach succeeds in part because each choice uses the same group generators for ElGamal encryption.
-
-As before, suppose an election has $k$ options, and that a voter must select between $k_{\text{min}}$ and $k_{\text{max}}$ of them.
-Let $k' = k + k_{\text{max}} - k_{\text{min}}$ for convenience.
-We show the total size of the ballot-related proofs in Aura and ElectionGuard in Table \ref{table:size}, assuming for Aura a standard Schnorr-type instantiation of the required encryption validity proving system.
-In both cases, we generalize and assume all proof elements can be represented using a fixed and common size.\footnote{While Aura is presented for general groups, \cite{electionguard} specifies particular group parameters.}
-Further, we account for batch verification, where it is possible to present Schnorr-type proving systems for both protocols either in a manner that supports efficient verification of multiple proofs at the same time (by including the initial prover messages in the proof), or in a manner not supporting this (by including the claimed Fiat-Shamir challenge in the proof, and requiring the verifier to reconstruct the prover messages); this affects the size of each proof and the overall computational complexity.
-
-\begin{table}
-    \centering
-    \caption{Total size of each ballot's validity proofs for Aura and ElectionGuard, given in proof elements, both supporting batch verification and not}
-    \label{table:size}
-    \begin{tabular}{l|c|c|}
-        Protocol & Size (batching) & Size (no batching) \\
-        \hline
-        Aura & $5k' + 4$ & $4k' + 4$ \\
-        ElectionGuard & $8k' + 3$ & $4k' + 2$ \\
-    \end{tabular}
-\end{table}
-
-We note an interesting tradeoff, in that the total size of a ballot varies between the two protocols depending on the need for batch verification support.
-In the case where batch verification is desired or required, Aura ballots are significantly smaller than those of ElectionGuard; if batch verification is not used, Aura ballots are slightly larger.
-Since Aura is particularly intended for efficient use in decentralized settings where both the size of the public bulletin board and overall verification complexity are considered limited resources, this provides a distinct and notable advantage.
-
 
 \end{document}
 
