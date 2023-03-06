@@ -12,16 +12,18 @@
 \begin{document}
 
 \title{Aura: private voting with reduced trust on tallying authorities}
-\author{Aram Jivanyan\inst{1,2}\thanks{Corresponding author: \email{aram@firo.org}} \and Aaron Feickert\inst{3}}
-\institute{Firo \and Yerevan State University \and Cypher Stack}
+\author{}
+\institute{}
+%\author{Aram Jivanyan\inst{1,2}\thanks{Corresponding author: \email{aram@firo.org}} \and Aaron Feickert\inst{3}}
+%\institute{Firo \and Yerevan State University \and Cypher Stack}
 \maketitle
 
 \begin{abstract}
 	Electronic voting has long been an area of active and challenging research.
 	Security properties relevant to physical voting in elections with a variety of threat models and priorities are often difficult to reproduce in cryptographic systems and protocols.
-    Even in voting systems where ballot contents are private and results are verifiable, ballot anonymity is often offloaded to requirements of trusted parties.
-	Here we introduce Aura, an election protocol that reduces trust on tallying authorities and organizers while ensuring voter privacy.
-	Ballots in Aura are dissociated from voter identity cryptographically and use verifiable encryption and threshold decryption to mitigate trust in tallying authorities
+    Even in voting systems where ballot contents are private and results are verifiable, voter authentication and ballot anonymity are often offloaded to requirements of trusted parties, making them unsuitable for on-chain applications.
+	Here we introduce Aura, an election protocol that reduces trust on tallying authorities and organizers while ensuring ballot and voter privacy.
+	Ballots in Aura are dissociated from voter identity cryptographically and use verifiable encryption and threshold decryption to mitigate trust in tallying authorities.
     Aura requires no trusted setups for cryptographic primitives and uses efficient proving systems to reduce computation and communication complexity.
 	These properties make Aura a competitive candidate for use in a variety of applications where verifiable trust minimization is desirable or necessary.
 \end{abstract}
@@ -75,7 +77,7 @@ More recent work like Kryvos \cite{kryvos} examines more complex voting methods 
 
 \subsection{Contribution}
 
-Aura presents a protocol combining several useful properties that improve on earlier work.
+Aura presents a protocol combining several useful properties that improve on earlier work, making it particular suitable for on-chain applications.
 
 First, we minimize the trust on election participants, including tally authorities with the joint capability to decrypt ballot results.
 In Aura, all cryptographic components may be instantiated with public verifiable parameters.
